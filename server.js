@@ -32,10 +32,21 @@ app.route('/_api/package.json')
       res.type('txt').send(data.toString());
     });
   });
+
+var output = {ipaddress:"123.123.123.123",language:"xx-YY",software:"Windows XX 99.9; WinXX; xXX"}
   
 app.route('/')
     .get(function(req, res) {
-		  res.sendFile(process.cwd() + '/views/index.html');
+		  //res.sendFile(process.cwd() + '/views/index.html');
+      output.ipaddress = req.headers['x-forwarded-for'].split(',').reverse().pop(); 
+      output.language = req.headers['accept-language'].split(',').reverse().pop(); 
+      output.software = req.headers['user-agent']; 
+  
+      var patt1 = /\((.*?)\)/; 
+      output.software = output.software.match(patt1).pop();
+      //output = req.headers; 
+      res.send(output);
+  
     })
 
 // Respond not found to all the wrong routes
